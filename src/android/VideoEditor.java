@@ -35,7 +35,8 @@ import net.ypresto.androidtranscoder.MediaTranscoder;
 
 import org.ffmpeg.android.FfmpegController;
 import org.ffmpeg.android.Clip;
-import org.ffmpeg.android.ShellUtils.ShellCallback;
+import org.ffmpeg.android.ShellUtils;
+
 
 
 /**
