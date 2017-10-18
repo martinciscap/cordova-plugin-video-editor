@@ -33,7 +33,6 @@ import android.util.Log;
 import net.ypresto.androidtranscoder.MediaTranscoder;
 
 import org.ffmpeg.android.FfmpegController;
-import org.ffmpeg.android.FfprobeController;
 import org.ffmpeg.android.Clip;
 import org.ffmpeg.android.ShellUtils.ShellCallback;
 
