@@ -32,6 +32,12 @@ import android.util.Log;
 
 import net.ypresto.androidtranscoder.MediaTranscoder;
 
+import org.ffmpeg.android.FfmpegController;
+import org.ffmpeg.android.FfprobeController;
+import org.ffmpeg.android.Clip;
+import org.ffmpeg.android.ShellUtils.ShellCallback;
+
+
 /**
  * VideoEditor plugin for Android
  * Created by Ross Martin 2-2-15
@@ -629,5 +635,195 @@ public class VideoEditor extends CordovaPlugin {
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
+
+
+	/**
+     * getFileExt
+     *
+     * Gets the file extension from a filename
+     *
+     * @param String filename
+     * @return String
+     */
+    private String getFileExt(String filename){
+        try {
+            return filename.substring(filename.lastIndexOf("."));
+
+        }
+        catch (Exception e) {
+            return "";
+        }
+	}
+	
+    /**
+     * durationFormat
+     *
+     * Formats a double timestamp into a string ready for
+     * use in ffmpeg
+     *
+     * @param double duration
+     * @return void
+     */
+    private String durationFormat(double duration){
+        String res = new String();
+        int hours = (int)(duration/3600f);
+        duration -= (hours*3600);
+        int min = (int)(duration/60f);
+        duration -= (min*60);
+        res =  "0" + String.format(Locale.US, "%s", hours) + ":";
+        res += "0" + String.format(Locale.US, "%s", min) + ":";
+        res += String.format(Locale.US, "%s", duration);
+        return res;
+    }
+
+    /**
+     * getTempDir
+     *
+     * Make a temp directory for storing intermediate files.
+     * Named after file type, eg 'mp4', 'ts')
+     *
+     * @param Context appContext
+     * @param String ext
+     * @return File
+     */
+    private File getTempDir(Context appContext, String ext){
+        final File tempDir = new File(appContext.getCacheDir(), ext.substring(1));
+        if(!tempDir.exists()){
+            if (!tempDir.mkdirs()) {
+                callback.error("Can't access or make temporary cache directory");
+                return null;
+            }
+        }
+        return tempDir;
+    }
+
+	  /**
+     * trim
+     *
+     * Performs a fast-trim operation on an input clip.
+     *
+     * ARGUMENTS
+     * =========
+     *
+     * fileUri      - path to input video
+     * trimStart      - time to start trimming
+     * trimEnd        - time to end trimming
+     * outputFileName - output file name
+     *
+     * RESPONSE
+     * ========
+     *
+     * outputFilePath - path to output file
+     *
+     * @param JSONArray args
+     * @return void
+     */
+    private void trim(JSONArray args) throws JSONException, IOException {
+        Log.d(TAG, "trim firing");
+
+        // parse arguments
+        JSONObject options = args.optJSONObject(0);
+
+        Log.d(TAG, "options: " + options.toString());
+
+        // outputFileName
+        final String outputFileName = options.optString(
+            "outputFileName",
+            new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date())
+        );
+        final String inputFilePath = options.getString("fileUri");
+
+        // outputFileExt
+        final String outputFileExt = this.getFileExt(inputFilePath);
+
+        // inputFile
+        final File inFile = this.resolveLocalFileSystemURI(inputFilePath);
+        if (!inFile.exists()) {
+            Log.d(TAG, "input file does not exist");
+            callback.error("input video does not exist.");
+            return;
+        }
+
+        // trim points
+        double trim0 = options.optDouble("trimStart");
+        final String trimstart = this.durationFormat(trim0);
+        double trimend = options.getDouble("trimEnd");
+        trimend = trimend - trim0;
+        if(trimend == 0){
+            callback.error("trim: failed to trim video; duration is 0");
+            return;
+        }
+        final String duration = this.durationFormat(trimend);
+
+        // tempDir
+        final Context appContext = cordova.getActivity().getApplicationContext();
+        final File tempDir = this.getTempDir(appContext, outputFileExt);
+
+        // outputFilePath
+        final File outputFile = new File(tempDir, outputFileName + outputFileExt);
+        final String outputFilePath = outputFile.getAbsolutePath();
+
+        // start task
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+                    FfmpegController ffmpegController = new FfmpegController(appContext, tempDir);
+
+                    // ffmpeg -ss [start1] -i [INPUT] -ss [start2] -t [duration] -c copy [OUTPUT]
+                    ArrayList<String> cmd = new ArrayList<String>();
+                    cmd.add(ffmpegController.getBinaryPath());
+                    // fast, inaccurate trim
+                    cmd.add("-ss");
+                    cmd.add(trimstart);
+                    // input
+                    cmd.add("-i");
+                    cmd.add(inFile.getCanonicalPath());
+                    // duration
+                    cmd.add("-t");
+                    cmd.add(duration);
+                    // copy audio, video
+                    cmd.add("-c");
+                    cmd.add("copy");
+
+                    cmd.add(outputFilePath);
+                    ffmpegController.execFFMPEG(cmd, new ShellUtils.ShellCallback() {
+                        @Override
+                        public void shellOut(String shellLine) {
+                            Log.d(TAG, "shellOut: " + shellLine);
+                            try {
+                                JSONObject jsonObj = new JSONObject();
+                                jsonObj.put("progress", shellLine.toString());
+                                PluginResult progressResult = new PluginResult(PluginResult.Status.OK, jsonObj);
+                                progressResult.setKeepCallback(true);
+                                callback.sendPluginResult(progressResult);
+                            } catch (JSONException e) {
+                                Log.d(TAG, "PluginResult error: " + e);
+                            }
+                        }
+
+                        @Override
+                        public void processComplete(int exitValue) {
+                        }
+                    });
+
+                    Log.d(TAG, "ffmpeg finished");
+                    if (!outputFile.exists()) {
+                        Log.d(TAG, "outputFile doesn't exist!");
+                        callback.error("trim: failed to trim video");
+                        return;
+                    }
+
+                    callback.success(outputFilePath);
+                } catch (Throwable e) {
+                    Log.d(TAG, "transcode exception ", e);
+                    callback.error(e.toString());
+                }
+            }
+        });
+
+    }
+
+
+
 
 }
