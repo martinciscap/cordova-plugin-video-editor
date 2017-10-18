@@ -5,8 +5,7 @@ repositories{
 }
 
 dependencies {
-    compile 'com.github.ergovia-mobile:android-transcoder:v0.1.10R_ergovia',
-		    'com.writingminds:FFmpegAndroid:0.3.2'
+    compile 'com.github.ergovia-mobile:android-transcoder:v0.1.10R_ergovia'
 }
 
 android {
