@@ -69,6 +69,13 @@ public class VideoEditor extends CordovaPlugin {
                 callback.error(e.toString());
             }
             return true;
+        } else if (action.equals("trim")) {
+            try {
+                this.trim(args);
+            } catch (IOException e) {
+                callback.error(e.toString());
+            }
+            return true;
         } else if (action.equals("getVideoInfo")) {
             try {
                 this.getVideoInfo(args);
