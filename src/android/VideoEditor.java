@@ -6,6 +6,7 @@ import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.ArrayList;
 
 import android.graphics.Bitmap;
 import org.apache.cordova.CordovaPlugin;
