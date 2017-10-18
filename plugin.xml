@@ -27,8 +27,6 @@
             </feature>
         </config-file>
 
-        <!-- add android-ffmpeg-java lib -->
-        <framework src="src/android/android-ffmpeg-java" custom="true" />
 		
         <!-- add plugin class -->
         <source-file src="src/android/VideoEditor.java" target-dir="src/org/apache/cordova/videoeditor" />
@@ -36,6 +34,9 @@
 
         <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
 
+        <!-- add android-ffmpeg-java lib -->
+        <framework src="src/android/android-ffmpeg-java" custom="true" />
+		
     </platform>
 
     <!-- ios -->
