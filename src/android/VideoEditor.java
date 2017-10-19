@@ -88,7 +88,7 @@ public class VideoEditor extends CordovaPlugin {
         return false;
     }
 
-    /**
+      /**
      * transcodeVideo
      *
      * Transcodes a video
@@ -115,10 +115,21 @@ public class VideoEditor extends CordovaPlugin {
      * @return void
      */
     private void transcodeVideo(JSONArray args) throws JSONException, IOException {
-        Log.d(TAG, "transcodeVideo firing");
+		Log.d(TAG, "transcodeVideo firing");
+
 
         JSONObject options = args.optJSONObject(0);
         Log.d(TAG, "options: " + options.toString());
+
+
+				
+		/*
+		* Temporarly disable transociding on Andorid
+		*/
+		callback.success(options.getString("fileUri"));
+
+
+
 
         final File inFile = this.resolveLocalFileSystemURI(options.getString("fileUri"));
         if (!inFile.exists()) {
@@ -264,6 +275,7 @@ public class VideoEditor extends CordovaPlugin {
             }
         });
     }
+
 
     /**
      * createThumbnail
