@@ -127,7 +127,8 @@ public class VideoEditor extends CordovaPlugin {
 		* Temporarly disable transociding on Andorid
 		*/
 		callback.success(options.getString("fileUri"));
-
+		return;
+		
 
 
 
