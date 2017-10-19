@@ -769,7 +769,9 @@ public class VideoEditor extends CordovaPlugin {
 
         // outputFilePath
         final File outputFile = new File(tempDir, outputFileName + outputFileExt);
-        final String outputFilePath = outputFile.getAbsolutePath();
+        final String outputFilePath = "file://" + outputFile.getAbsolutePath();
+
+
 
         // start task
         cordova.getThreadPool().execute(new Runnable() {
@@ -821,7 +823,7 @@ public class VideoEditor extends CordovaPlugin {
                         return;
                     }
 
-                    callback.success(outputFilePath);
+					callback.success("file://" + outputFilePath);
                 } catch (Throwable e) {
                     Log.d(TAG, "transcode exception ", e);
                     callback.error(e.toString());
