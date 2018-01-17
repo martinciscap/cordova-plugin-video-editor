@@ -33,9 +33,6 @@
         <source-file src="src/android/CustomAndroidFormatStrategy.java" target-dir="src/org/apache/cordova/videoeditor" />
 
         <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
-
-        <!-- add android-ffmpeg-java lib -->
-        <framework src="src/android/android-ffmpeg-java" custom="true" />
 		
     </platform>
 

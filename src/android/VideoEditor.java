@@ -31,12 +31,6 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import net.ypresto.androidtranscoder.MediaTranscoder;
-
-import org.ffmpeg.android.FfmpegController;
-import org.ffmpeg.android.Clip;
-import org.ffmpeg.android.ShellUtils;
-
 
 
 /**
@@ -569,8 +563,8 @@ public class VideoEditor extends CordovaPlugin {
         return tempDir;
     }
 
-	  /**
-     * trim
+	/**
+     * trim - DISABLED
      *
      * Performs a fast-trim operation on an input clip.
      *
@@ -616,17 +610,6 @@ public class VideoEditor extends CordovaPlugin {
             return;
         }
 
-        // trim points
-        double trim0 = options.optDouble("trimStart");
-        final String trimstart = this.durationFormat(trim0);
-        double trimend = options.getDouble("trimEnd");
-        trimend = trimend - trim0;
-        if(trimend == 0){
-            callback.error("trim: failed to trim video; duration is 0");
-            return;
-        }
-        final String duration = this.durationFormat(trimend);
-
         // tempDir
         final Context appContext = cordova.getActivity().getApplicationContext();
         final File tempDir = this.getTempDir(appContext, outputFileExt);
@@ -636,64 +619,7 @@ public class VideoEditor extends CordovaPlugin {
         final String outputFilePath = "file://" + outputFile.getAbsolutePath();
 
 
-
-        // start task
-        cordova.getThreadPool().execute(new Runnable() {
-            public void run() {
-                try {
-                    FfmpegController ffmpegController = new FfmpegController(appContext, tempDir);
-
-                    // ffmpeg -ss [start1] -i [INPUT] -ss [start2] -t [duration] -c copy [OUTPUT]
-                    ArrayList<String> cmd = new ArrayList<String>();
-                    cmd.add(ffmpegController.getBinaryPath());
-                    // fast, inaccurate trim
-                    cmd.add("-ss");
-                    cmd.add(trimstart);
-                    // input
-                    cmd.add("-i");
-                    cmd.add(inFile.getCanonicalPath());
-                    // duration
-                    cmd.add("-t");
-                    cmd.add(duration);
-                    // copy audio, video
-                    cmd.add("-c");
-                    cmd.add("copy");
-
-                    cmd.add(outputFilePath);
-                    ffmpegController.execFFMPEG(cmd, new ShellUtils.ShellCallback() {
-                        @Override
-                        public void shellOut(String shellLine) {
-                            Log.d(TAG, "shellOut: " + shellLine);
-                            try {
-                                JSONObject jsonObj = new JSONObject();
-                                jsonObj.put("progress", shellLine.toString());
-                                PluginResult progressResult = new PluginResult(PluginResult.Status.OK, jsonObj);
-                                progressResult.setKeepCallback(true);
-                                callback.sendPluginResult(progressResult);
-                            } catch (JSONException e) {
-                                Log.d(TAG, "PluginResult error: " + e);
-                            }
-                        }
-
-                        @Override
-                        public void processComplete(int exitValue) {
-                        }
-                    });
-
-                    Log.d(TAG, "ffmpeg finished");
-                    if (!outputFile.exists()) {
-                        Log.d(TAG, "outputFile doesn't exist!");
-                        callback.error("trim: failed to trim video");
-                        return;
-                    }
-
-					callback.success(outputFilePath);
-                } catch (Throwable e) {
-                    Log.d(TAG, "transcode exception ", e);
-                    callback.error(e.toString());
-                }
-            }
-        });
+		callback.success(outputFilePath);
 
     }
 
