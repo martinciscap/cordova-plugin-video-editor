@@ -585,6 +585,8 @@ public class VideoEditor extends CordovaPlugin {
      * @return void
      */
     private void trim(JSONArray args) throws JSONException, IOException {
+
+		//https://github.com/sannies/mp4parser/blob/master/examples/src/main/java/com/googlecode/mp4parser/ShortenExample.java
         Log.d(TAG, "trim firing");
 
         // parse arguments
@@ -619,7 +621,7 @@ public class VideoEditor extends CordovaPlugin {
         final String outputFilePath = "file://" + outputFile.getAbsolutePath();
 
 
-		callback.success(outputFilePath);
+		callback.success(inputFilePath);
 
     }
 
