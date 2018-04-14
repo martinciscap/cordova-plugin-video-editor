@@ -31,7 +31,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 
-
+import net.ypresto.androidtranscoder.MediaTranscoder;
 
 /**
  * VideoEditor plugin for Android
