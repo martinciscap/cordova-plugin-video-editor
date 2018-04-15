@@ -100,7 +100,7 @@
 
     AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:inputFileURL options:nil];
 
-    NSString *cacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *cacheDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *outputPath = [NSString stringWithFormat:@"%@/%@%@", cacheDir, videoFileName, outputExtension];
     NSURL *outputURL = [NSURL fileURLWithPath:outputPath];
 
