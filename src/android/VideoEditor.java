@@ -594,31 +594,31 @@ public class VideoEditor extends CordovaPlugin {
 
         Log.d(TAG, "options: " + options.toString());
 
-        // outputFileName
-        final String outputFileName = options.optString(
-            "outputFileName",
-            new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date())
-        );
+        // // outputFileName
+        // final String outputFileName = options.optString(
+        //     "outputFileName",
+        //     new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date())
+        // );
         final String inputFilePath = options.getString("fileUri");
 
-        // outputFileExt
-        final String outputFileExt = this.getFileExt(inputFilePath);
+        // // outputFileExt
+        // final String outputFileExt = this.getFileExt(inputFilePath);
 
-        // inputFile
-        final File inFile = this.resolveLocalFileSystemURI(inputFilePath);
-        if (!inFile.exists()) {
-            Log.d(TAG, "input file does not exist");
-            callback.error("input video does not exist.");
-            return;
-        }
+        // // inputFile
+        // final File inFile = this.resolveLocalFileSystemURI(inputFilePath);
+        // if (!inFile.exists()) {
+        //     Log.d(TAG, "input file does not exist");
+        //     callback.error("input video does not exist.");
+        //     return;
+        // }
 
-        // tempDir
-        final Context appContext = cordova.getActivity().getApplicationContext();
-        final File tempDir = this.getTempDir(appContext, outputFileExt);
+        // // tempDir
+        // final Context appContext = cordova.getActivity().getApplicationContext();
+        // final File tempDir = this.getTempDir(appContext, outputFileExt);
 
-        // outputFilePath
-        final File outputFile = new File(tempDir, outputFileName + outputFileExt);
-        final String outputFilePath = "file://" + outputFile.getAbsolutePath();
+        // // outputFilePath
+        // final File outputFile = new File(tempDir, outputFileName + outputFileExt);
+        // final String outputFilePath = "file://" + outputFile.getAbsolutePath();
 
 
 		callback.success(inputFilePath);
