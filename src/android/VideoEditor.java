@@ -617,16 +617,31 @@ public class VideoEditor extends CordovaPlugin {
     // }
 
 
-    //public static void startTrim(File src, File dst, int startMs, int endMs) throws IOException {
-    public static void startTrim(JSONArray args) throws IOException {
-		JSONObject options = args.optJSONObject(0);
-		final String inputFilePath = options.getString("fileUri");
-		int startMs =  options.optInt("trimStart", 0);
-		int endMs =  options.optInt("trimEnd", 0);
-		final String outputFileName = options.getString("outputFileName");
+    //public static void startTrim(File src, string outputFileName, int startMs, int endMs) throws JSONException, IOException {
+    public void trim(JSONArray args) throws JSONException, IOException {
+        JSONObject options = args.optJSONObject(0);
+        final String inputFilePath = options.getString("fileUri");
+        int startMs =  options.optInt("trimStart", 0);
+        int endMs =  options.optInt("trimEnd", 0);
 
+        final String outputFileName = options.optString(
+                "outputFileName",
+                new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date())
+        );
 
-        FileDataSourceImpl file = new FileDataSourceImpl(src);
+        // outputFileExt
+        final String outputFileExt = this.getFileExt(inputFilePath);
+
+        // tempDir
+        final Context appContext = cordova.getActivity().getApplicationContext();
+        final File tempDir = this.getTempDir(appContext, outputFileExt);
+        // outputFilePath
+        final File outputFile = new File(tempDir, outputFileName + outputFileExt);
+        final String outputFilePath = outputFile.getAbsolutePath();
+
+        final File inputFile = new File(tempDir, "tmp_movie" + outputFileExt);
+
+        FileDataSourceImpl file = new FileDataSourceImpl(inputFile);
         Movie movie = MovieCreator.build(file);
         // remove all tracks we will create new tracks from the old
         List<Track> tracks = movie.getTracks();
@@ -678,10 +693,10 @@ public class VideoEditor extends CordovaPlugin {
         Container out = new DefaultMp4Builder().build(movie);
         MovieHeaderBox mvhd = Path.getPath(out, "moov/mvhd");
         mvhd.setMatrix(Matrix.ROTATE_180);
-        if (!dst.exists()) {
-            dst.createNewFile();
+        if (!outputFile.exists()) {
+            outputFile.createNewFile();
         }
-        FileOutputStream fos = new FileOutputStream(dst);
+        FileOutputStream fos = new FileOutputStream(outputFilePath);
         WritableByteChannel fc = fos.getChannel();
         try {
             out.writeContainer(fc);
@@ -693,6 +708,7 @@ public class VideoEditor extends CordovaPlugin {
 
         file.close();
     }
+
 
 
     private static double correctTimeToSyncSample(Track track, double cutHere, boolean next) {
