@@ -579,7 +579,7 @@ public class VideoEditor extends CordovaPlugin {
     }
 
 	/**
-     * trim - DISABLED
+     * trim
      *
      * Performs a fast-trim operation on an input clip.
      *
@@ -599,30 +599,11 @@ public class VideoEditor extends CordovaPlugin {
      * @param JSONArray args
      * @return void
      */
-    // private void trim(JSONArray args) throws JSONException, IOException {
-
-	// 	//https://github.com/sannies/mp4parser/blob/master/examples/src/main/java/com/googlecode/mp4parser/ShortenExample.java
-    //     Log.d(TAG, "trim firing");
-
-    //     // parse arguments
-    //     JSONObject options = args.optJSONObject(0);
-
-    //     Log.d(TAG, "options: " + options.toString());
-
-
-    //     final String inputFilePath = options.getString("fileUri");
-
-	// 	callback.success(inputFilePath);
-
-    // }
-
-
-    //public static void startTrim(File src, string outputFileName, int startMs, int endMs) throws JSONException, IOException {
     public void trim(JSONArray args) throws JSONException, IOException {
         JSONObject options = args.optJSONObject(0);
-        final String inputFilePath = options.getString("fileUri");
-        int startMs =  options.optInt("trimStart", 0);
-        int endMs =  options.optInt("trimEnd", 0);
+        final String inputFilePath = options.getString("fileUri").replace("file:/", "");
+        double startTime =  options.optDouble("trimStart", 0);
+        double endTime =  options.optDouble("trimEnd", 0);
 
         final String outputFileName = options.optString(
                 "outputFileName",
@@ -639,15 +620,13 @@ public class VideoEditor extends CordovaPlugin {
         final File outputFile = new File(tempDir, outputFileName + outputFileExt);
         final String outputFilePath = outputFile.getAbsolutePath();
 
-        final File inputFile = new File(tempDir, "tmp_movie" + outputFileExt);
+        final File inputFile = new File(inputFilePath);
 
         FileDataSourceImpl file = new FileDataSourceImpl(inputFile);
         Movie movie = MovieCreator.build(file);
         // remove all tracks we will create new tracks from the old
         List<Track> tracks = movie.getTracks();
         movie.setTracks(new LinkedList<Track>());
-        double startTime = startMs / 1000;
-        double endTime = endMs / 1000;
         boolean timeCorrected = false;
         // Here we try to find a track that has sync samples. Since we can only start decoding
         // at such a sample we SHOULD make sure that the start of the new fragment is exactly
@@ -692,7 +671,7 @@ public class VideoEditor extends CordovaPlugin {
 
         Container out = new DefaultMp4Builder().build(movie);
         MovieHeaderBox mvhd = Path.getPath(out, "moov/mvhd");
-        mvhd.setMatrix(Matrix.ROTATE_180);
+        mvhd.setMatrix(Matrix.ROTATE_0);
         if (!outputFile.exists()) {
             outputFile.createNewFile();
         }
@@ -704,10 +683,13 @@ public class VideoEditor extends CordovaPlugin {
             fc.close();
             fos.close();
             file.close();
+            callback.success(outputFilePath);
         }
 
         file.close();
+
     }
+
 
 
 
