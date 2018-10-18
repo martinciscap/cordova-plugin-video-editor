@@ -129,7 +129,7 @@ function videoTranscodeError(err) {
 #### Windows Quirks
 Windows does not support any of the optional parameters at this time. Specifying them will not cause an error but, there is no functionality behind them.
 
-### Trim a Video (iOS only)
+### Trim a Video
 ```javascript
 VideoEditor.trim(
     trimSuccess,
@@ -248,8 +248,9 @@ function getVideoInfoSuccess(info) {
 }
 ```
 
-## Android & FFmpeg
-FFmpeg has been removed from android for several reasons but mainly for performance.  If you still need the old functionality that FFmpeg provided  [V1.09](https://github.com/jbavari/cordova-plugin-video-editor/tree/1.0.9) is the last version that will use it.
+## On Android
+This librery uses [mp4parser](https://github.com/sannies/mp4parser) to manipulate mp4 files
+
 
 ## On iOS
 
