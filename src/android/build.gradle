@@ -12,5 +12,5 @@ android {
 }
 
 dependencies {
-    compile 'com.mp4parser:isoparser:1.9.37'
+    compile 'org.mp4parser:isoparser:1.9.37'
 }
