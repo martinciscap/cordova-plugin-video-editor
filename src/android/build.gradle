@@ -12,5 +12,5 @@ android {
 }
 
 dependencies {
-    compile 'com.googlecode.mp4parser:isoparser:1.1.21'
+    compile 'com.mp4parser:isoparser:1.9.37'
 }
