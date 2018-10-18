@@ -33,14 +33,14 @@ import android.util.Log;
 
 import com.coremedia.iso.boxes.Container;
 import com.coremedia.iso.boxes.MovieHeaderBox;
-import org.mp4parser.FileDataSourceImpl;
-import org.mp4parser.authoring.Movie;
-import org.mp4parser.authoring.Track;
-import org.mp4parser.authoring.builder.DefaultMp4Builder;
-import org.mp4parser.authoring.container.mp4.MovieCreator;
-import org.mp4parser.authoring.tracks.CroppedTrack;
-import org.mp4parser.util.Matrix;
-import org.mp4parser.util.Path;
+import com.googlecode.mp4parser.FileDataSourceImpl;
+import com.googlecode.mp4parser.authoring.Movie;
+import com.googlecode.mp4parser.authoring.Track;
+import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
+import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
+import com.googlecode.mp4parser.authoring.tracks.CroppedTrack;
+import com.googlecode.mp4parser.util.Matrix;
+import com.googlecode.mp4parser.util.Path;
 
 import java.nio.channels.WritableByteChannel;
 import java.util.Arrays;
@@ -601,7 +601,7 @@ public class VideoEditor extends CordovaPlugin {
      */
     public void trim(JSONArray args) throws JSONException, IOException {
         JSONObject options = args.optJSONObject(0);
-        final String inputFilePath = options.getString("fileUri").replace("file:/", "");
+        final String inputFilePath = options.getString("fileUri");
         double startTime =  options.optDouble("trimStart", 0);
         double endTime =  options.optDouble("trimEnd", 0);
 
