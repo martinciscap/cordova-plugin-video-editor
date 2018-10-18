@@ -601,7 +601,7 @@ public class VideoEditor extends CordovaPlugin {
      */
     public void trim(JSONArray args) throws JSONException, IOException {
         JSONObject options = args.optJSONObject(0);
-        final String inputFilePath = options.getString("fileUri");
+        final String inputFilePath = options.getString("fileUri").replace("file:/", "");
         double startTime =  options.optDouble("trimStart", 0);
         double endTime =  options.optDouble("trimEnd", 0);
 
