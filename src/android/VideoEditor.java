@@ -603,7 +603,7 @@ public class VideoEditor extends CordovaPlugin {
         JSONObject options = args.optJSONObject(0);
         final String inputFilePath = options.getString("fileUri").replace("file:/", "");
         double startTime =  options.optDouble("trimStart", 0);
-        double endTime =  options.optDouble("trimEnd", 0);
+        double endTime =  options.optDouble("trimEnd");//, 0);
 
         final String outputFileName = options.optString(
                 "outputFileName",
@@ -618,7 +618,35 @@ public class VideoEditor extends CordovaPlugin {
         final File tempDir = this.getTempDir(appContext, outputFileExt);
         // outputFilePath
         final File outputFile = new File(tempDir, outputFileName + outputFileExt);
-        final String outputFilePath = outputFile.getAbsolutePath();
+        //final String outputFilePath = outputFile.getAbsolutePath();
+
+        final PackageManager pm = appContext.getPackageManager();
+
+        ApplicationInfo ai;
+        try {
+            ai = pm.getApplicationInfo(cordova.getActivity().getPackageName(), 0);
+        } catch (final NameNotFoundException e) {
+            ai = null;
+        }
+
+        //final Context appContext = cordova.getActivity().getApplicationContext();        
+        final String appName = (String) (ai != null ? pm.getApplicationLabel(ai) : "Unknown");
+        File mediaStorageDir = new File(
+            Environment.getExternalStorageDirectory() + "/Movies",
+            appName
+        );
+
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                callback.error("Can't access or make Movies directory");
+                return;
+            }
+        }
+
+        final String outputFilePath = new File(
+                mediaStorageDir.getPath(),
+                outputFileName + ".mp4"
+        ).getAbsolutePath();
 
         final File inputFile = new File(inputFilePath);
 
