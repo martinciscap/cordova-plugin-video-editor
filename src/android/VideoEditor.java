@@ -645,7 +645,7 @@ public class VideoEditor extends CordovaPlugin {
 
         final String outputFilePath = new File(
                 mediaStorageDir.getPath(),
-                outputFileName + ".mp4"
+                outputFileName
         ).getAbsolutePath();
 
         final File inputFile = new File(inputFilePath);
